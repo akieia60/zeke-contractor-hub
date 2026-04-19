@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>North To South — Contractor Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deep: #151e29;
+  --panel: #1c2b3a;
+  --panel2: #223040;
+  --gold: #c9963a;
+  --gold2: #e0b55a;
+  --cream: #faf8f3;
+  --rule: #ddd8cf;
+  --muted: #7a7570;
+  --ink: #1a1a1a;
+  --hl: #f2ede2;
+  --green: #2e7d52;
+  --red: #c0392b;
+  --blue: #2471a3;
+  --r: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#1a1a1a;color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+.nav{background:var(--deep);padding:0 20px;display:flex;align-items:center;gap:0;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100;}
+.nav-brand{font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:1.1rem;padding:14px 20px 14px 0;border-right:1px solid rgba(255,255,255,0.1);margin-right:4px;white-space:nowrap;}
+.nav-brand span{color:var(--gold2);font-size:0.7rem;display:block;font-style:normal;letter-spacing:0.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif;}
+.nav-tab{padding:16px 14px;font-size:0.8rem;color:rgba(255,255,255,0.45);cursor:pointer;letter-spacing:0.04em;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;font-weight:500;}
+.nav-tab:hover{color:rgba(255,255,255,0.8);}
+.nav-tab.active{color:var(--gold2);border-bottom-color:var(--gold);}
+.nav-spacer{flex:1;}
+.job-count-badge{background:var(--gold);color:#1a0f00;font-size:0.68rem;font-weight:700;padding:2px 7px;border-radius:20px;margin-left:6px;}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:calc(100vh - 54px);}
+.screen.active{display:block;}
+
+/* ── DASHBOARD ── */
+.dash-hero{background:linear-gradient(135deg,var(--deep) 0%,var(--panel2) 100%);padding:32px 24px 28px;border-bottom:1px solid rgba(201,150,58,0.2);}
+.dash-hero h1{font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:1.8rem;line-height:1.2;}
+.dash-hero p{color:rgba(255,255,255,0.45);font-size:0.85rem;margin-top:4px;}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 24px;}
+.stat-card{background:var(--cream);border-radius:var(--r);padding:16px;text-align:center;border:1px solid var(--rule);}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--deep);font-weight:700;}
+.stat-val.gold{color:var(--gold);}
+.stat-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:2px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:0 24px;margin:8px 0 14px;}
+.section-head h2{font-family:'Playfair Display',serif;font-size:1.1rem;color:#fff;}
+.btn-sm{background:var(--gold);color:#1a0f00;border:none;padding:7px 14px;border-radius:5px;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.btn-sm:hover{opacity:.85;}
+.btn-sm.outline{background:transparent;border:1px solid rgba(201,150,58,.4);color:var(--gold2);}
+.btn-sm.outline:hover{background:rgba(201,150,58,.08);}
+.btn-sm.danger{background:var(--red);color:#fff;}
+
+/* Job cards on dashboard */
+.jobs-list{padding:0 24px 24px;display:flex;flex-direction:column;gap:10px;}
+.job-card{background:var(--cream);border-radius:var(--r);border:1px solid var(--rule);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .15s;}
+.job-card:hover{border-color:var(--gold);box-shadow:0 2px 12px rgba(201,150,58,.15);}
+.job-avatar{width:42px;height:42px;border-radius:50%;background:var(--panel);color:var(--gold2);font-family:'Playfair Display',serif;font-size:1.1rem;display:flex;align-items:center;justify-content:center;font-style:italic;flex-shrink:0;}
+.job-info{flex:1;min-width:0;}
+.job-name{font-weight:600;color:var(--deep);font-size:0.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.job-addr{font-size:0.78rem;color:var(--muted);margin-top:1px;}
+.job-right{text-align:right;flex-shrink:0;}
+.job-total{font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);font-weight:600;}
+.job-status{display:inline-block;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600;}
+.status-quote{background:#fef9e7;color:#b7950b;border:1px solid #f9e79f;}
+.status-active{background:#eafaf1;color:var(--green);border:1px solid #a9dfbf;}
+.status-done{background:#f0f3f4;color:var(--muted);border:1px solid var(--rule);}
+.status-pending{background:#fef5e7;color:#ca6f1e;border:1px solid #fad7a0;}
+.empty-state{text-align:center;padding:40px 24px;color:rgba(255,255,255,0.3);font-size:0.88rem;font-style:italic;}
+
+/* ── FORM PAGES (new job / invoice) ── */
+.form-page{background:#f5f2ec;min-height:calc(100vh - 54px);}
+.form-topbar{background:var(--panel);padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(201,150,58,.2);}
+.form-topbar h2{font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:1.1rem;}
+.form-topbar .back-btn{background:none;border:none;color:var(--gold2);cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:4px;}
+.form-topbar .back-btn:hover{background:rgba(255,255,255,.08);}
+.form-body{max-width:720px;margin:0 auto;padding:24px 20px 80px;}
+
+.card{background:#fff;border-radius:var(--r);border:1px solid var(--rule);margin-bottom:16px;overflow:hidden;}
+.card-head{background:var(--deep);padding:12px 18px;display:flex;align-items:center;gap:8px;}
+.card-head h3{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold2);font-size:0.95rem;}
+.card-head .card-icon{font-size:1rem;}
+.card-body{padding:18px;}
+
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:600;}
+.fg input,.fg textarea,.fg select{width:100%;border:1.5px solid var(--rule);border-radius:6px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);outline:none;transition:border .15s;background:#fff;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--gold);}
+.fg textarea{resize:vertical;min-height:72px;}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+
+/* Line items */
+.li-head{display:grid;grid-template-columns:1fr 70px 90px 36px;gap:8px;padding:0 0 6px;border-bottom:1px solid var(--rule);margin-bottom:8px;}
+.li-head span{font-size:0.67rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;}
+.li-head span:nth-child(2),.li-head span:nth-child(3){text-align:right;}
+.li-row{display:grid;grid-template-columns:1fr 70px 90px 36px;gap:8px;margin-bottom:7px;align-items:center;}
+.li-row input{border:1.5px solid var(--rule);border-radius:5px;padding:7px 9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;color:var(--ink);outline:none;width:100%;}
+.li-row input:focus{border-color:var(--gold);}
+.li-row input[type=number]{text-align:right;}
+.btn-li-add{background:transparent;border:1.5px dashed var(--rule);color:var(--muted);padding:7px 14px;border-radius:5px;cursor:pointer;font-size:0.8rem;font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:4px;}
+.btn-li-add:hover{border-color:var(--gold);color:var(--gold);}
+.li-del{background:none;border:none;color:#dbb;cursor:pointer;font-size:1rem;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;}
+.li-del:hover{background:#fce4e4;color:var(--red);}
+.li-total-row{display:flex;justify-content:flex-end;gap:8px;align-items:center;padding:10px 0 0;border-top:1px solid var(--rule);margin-top:8px;}
+.li-total-row span{font-size:0.8rem;color:var(--muted);}
+.li-total-row strong{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);}
+
+/* Payment split display */
+.split-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.split-item{background:var(--hl);border:1px solid var(--rule);border-radius:6px;padding:12px;text-align:center;}
+.split-item .split-amt{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--deep);font-weight:700;}
+.split-item .split-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+
+/* Photos */
+.photo-drop{border:2px dashed var(--rule);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:#fafafa;}
+.photo-drop:hover{border-color:var(--gold);background:var(--hl);}
+.photo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.photo-drop .drop-icon{font-size:1.8rem;margin-bottom:6px;}
+.photo-drop p{font-size:0.8rem;color:var(--muted);}
+.photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-top:12px;}
+.p-thumb{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:1;border:1px solid var(--rule);}
+.p-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.p-thumb .p-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);padding:3px 5px;}
+.p-thumb .p-label input{background:transparent;border:none;color:#fff;font-size:0.65rem;width:100%;padding:0;font-family:'DM Sans',sans-serif;}
+.p-thumb .p-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.5);border:none;color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;}
+
+/* Job status selector */
+.status-select{display:flex;gap:8px;flex-wrap:wrap;}
+.status-opt{padding:6px 14px;border-radius:20px;border:1.5px solid var(--rule);font-size:0.78rem;cursor:pointer;transition:all .15s;font-weight:500;}
+.status-opt.sel-quote{border-color:#f9e79f;background:#fef9e7;color:#b7950b;}
+.status-opt.sel-active{border-color:#a9dfbf;background:#eafaf1;color:var(--green);}
+.status-opt.sel-pending{border-color:#fad7a0;background:#fef5e7;color:#ca6f1e;}
+.status-opt.sel-done{border-color:var(--rule);background:#f0f3f4;color:var(--muted);}
+.status-opt:not(.selected){opacity:.5;}
+.status-opt.selected{opacity:1;font-weight:700;}
+
+/* Checklist */
+.checklist{display:flex;flex-direction:column;gap:6px;}
+.check-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:5px;background:#fafafa;border:1px solid var(--rule);}
+.check-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);flex-shrink:0;cursor:pointer;}
+.check-item label{font-size:0.85rem;color:var(--ink);cursor:pointer;flex:1;}
+.check-item.done label{text-decoration:line-through;color:var(--muted);}
+.btn-add-check{background:transparent;border:1.5px dashed var(--rule);color:var(--muted);padding:6px 12px;border-radius:5px;cursor:pointer;font-size:0.78rem;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .2s;}
+.btn-add-check:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;}
+.tl-item:not(:last-child){border-bottom:1px dashed var(--rule);}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);margin-top:5px;flex-shrink:0;}
+.tl-dot.done{background:var(--green);}
+.tl-content{flex:1;}
+.tl-title{font-size:0.88rem;font-weight:600;color:var(--deep);}
+.tl-date{font-size:0.75rem;color:var(--muted);margin-top:1px;}
+
+/* Notes / history log */
+.log-entry{padding:10px 12px;background:#fafafa;border-radius:5px;border:1px solid var(--rule);margin-bottom:7px;}
+.log-entry .log-time{font-size:0.68rem;color:var(--muted);margin-bottom:3px;}
+.log-entry .log-text{font-size:0.85rem;color:var(--ink);line-height:1.5;}
+
+/* Signature */
+.sig-block label{display:block;font-size:0.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.sig-wrap{border-bottom:2px solid var(--ink);height:56px;position:relative;border-radius:2px;background:#fafafa;}
+.sig-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;}
+.sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:4px;}
+.sig-name-line{font-size:0.8rem;color:var(--muted);}
+.sig-clear-btn{font-size:0.7rem;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;}
+.sig-clear-btn:hover{color:var(--red);}
+.sig-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+
+/* ── GENERATE INVOICE PREVIEW ── */
+.inv-preview-wrap{background:var(--cream);border-radius:4px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.15);}
+.inv-hdr{background:var(--deep);padding:30px 40px 24px;position:relative;}
+.inv-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));}
+.inv-co{font-family:'Playfair Display',serif;font-size:1.5rem;color:#fff;font-style:italic;}
+.inv-co-sub{font-size:.72rem;color:var(--gold2);letter-spacing:.18em;text-transform:uppercase;margin-top:3px;}
+.inv-co-contact{font-size:.78rem;color:rgba(255,255,255,.45);margin-top:8px;line-height:1.6;}
+.inv-meta-row{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:24px 40px;border-bottom:1px solid var(--rule);}
+.inv-bt-label{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.inv-bt-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--deep);}
+.inv-bt-detail{font-size:.82rem;color:var(--muted);line-height:1.7;margin-top:2px;}
+.inv-d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;}
+.inv-d-item label{display:block;font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1px;}
+.inv-d-item span{font-size:.88rem;font-weight:600;color:var(--deep);}
+.inv-d-item span.no{color:var(--gold);font-family:'Playfair Display',serif;font-size:1rem;}
+.inv-scope{padding:14px 40px;background:var(--hl);border-bottom:1px solid var(--rule);font-size:.83rem;color:var(--ink);line-height:1.6;}
+.inv-scope strong{font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:3px;}
+.inv-tbl{padding:22px 40px;}
+.inv-tbl-hd{display:grid;grid-template-columns:1fr 62px 86px 96px;gap:10px;padding-bottom:8px;border-bottom:2px solid var(--deep);}
+.inv-tbl-hd span{font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.inv-tbl-hd span:not(:first-child){text-align:right;}
+.inv-tbl-row{display:grid;grid-template-columns:1fr 62px 86px 96px;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);align-items:start;}
+.inv-tbl-row:last-child{border-bottom:none;}
+.inv-row-name{font-size:.86rem;color:var(--deep);font-weight:600;line-height:1.4;}
+.inv-row-num{font-size:.86rem;text-align:right;color:var(--ink);}
+.inv-row-num.bold{font-weight:600;color:var(--deep);}
+.inv-totals{display:flex;justify-content:flex-end;padding:0 40px 20px;}
+.inv-totals-box{width:240px;}
+.inv-tot-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--rule);font-size:.86rem;}
+.inv-tot-row label{color:var(--muted);}
+.inv-tot-row span{font-weight:600;color:var(--deep);}
+.inv-tot-row.big{border-bottom:none;padding-top:10px;}
+.inv-tot-row.big label{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--deep);}
+.inv-tot-row.big span{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--gold);}
+.inv-pay{margin:0 40px 20px;background:var(--hl);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 6px 6px 0;}
+.inv-pay h4{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;font-weight:700;}
+.inv-pay-line{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(201,150,58,.15);font-size:.83rem;}
+.inv-pay-line:last-child{border-bottom:none;}
+.inv-pay-amt{font-weight:700;color:var(--deep);}
+.inv-pay-note{font-size:.72rem;color:var(--muted);font-style:italic;}
+.inv-samples{padding:0 40px 20px;display:none;}
+.inv-samples h3{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--rule);}
+.inv-samples-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.inv-sample-card{border:1px solid var(--rule);border-radius:6px;overflow:hidden;}
+.inv-sample-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.inv-sample-lbl{padding:5px 8px;font-size:.72rem;color:var(--muted);text-align:center;background:var(--hl);border-top:1px solid var(--rule);font-style:italic;}
+.inv-notes-sec{margin:0 40px 20px;display:none;}
+.inv-notes-sec h3{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--rule);}
+.inv-notes-body{font-size:.83rem;color:var(--ink);line-height:1.75;white-space:pre-wrap;background:var(--hl);padding:12px 16px;border-radius:6px;border:1px solid var(--rule);}
+.inv-sig-row{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:20px 40px;border-top:1px solid var(--rule);}
+.inv-sig-block label{display:block;font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.inv-sig-line{border-bottom:1.5px solid var(--ink);height:48px;position:relative;background:#fafafa;}
+.inv-sig-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;}
+.inv-sig-name{font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--rule);padding-bottom:2px;margin-top:3px;}
+.inv-sig-date{font-size:.78rem;color:var(--muted);margin-top:5px;}
+.inv-sig-clear{font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;margin-top:2px;}
+.inv-sig-clear:hover{color:var(--red);}
+.inv-ftr{background:var(--deep);padding:16px 40px;display:flex;justify-content:space-between;align-items:center;}
+.inv-ftr-note{font-size:.75rem;color:rgba(255,255,255,.35);font-style:italic;}
+.inv-ftr-brand{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold2);font-size:.82rem;}
+
+/* ── CLIENTS SCREEN ── */
+.clients-search{padding:16px 24px 8px;}
+.clients-search input{width:100%;background:var(--panel);border:1px solid rgba(201,150,58,.2);border-radius:7px;padding:10px 14px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;}
+.clients-search input::placeholder{color:rgba(255,255,255,.3);}
+.clients-search input:focus{border-color:var(--gold);}
+.client-list{padding:0 24px 24px;display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.client-row{background:var(--cream);border-radius:7px;border:1px solid var(--rule);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .15s;}
+.client-row:hover{border-color:var(--gold);}
+.client-row .cl-name{font-weight:600;color:var(--deep);font-size:.9rem;}
+.client-row .cl-meta{font-size:.75rem;color:var(--muted);margin-top:1px;}
+.client-row .cl-jobs{font-size:.72rem;color:var(--gold);font-weight:600;text-align:right;}
+.client-row .cl-total{font-family:'Playfair Display',serif;font-size:.9rem;color:var(--deep);font-weight:700;text-align:right;}
+
+/* ── SETTINGS ── */
+.settings-body{max-width:560px;margin:0 auto;padding:24px 20px;}
+.set-card{background:#fff;border-radius:var(--r);border:1px solid var(--rule);margin-bottom:16px;overflow:hidden;}
+.set-head{background:var(--hl);padding:11px 16px;border-bottom:1px solid var(--rule);}
+.set-head h3{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.set-body{padding:16px;}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);font-size:.88rem;}
+.set-row:last-child{border-bottom:none;}
+.set-row label{color:var(--ink);font-weight:500;}
+.set-row .set-val{color:var(--muted);font-size:.82rem;}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:24px;cursor:pointer;transition:.2s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;}
+.toggle input:checked+.toggle-slider{background:var(--gold);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+
+/* ── PRINT ── */
+@media print{
+  .nav,.form-topbar,.btn-sm,.btn-li-add,.btn-add-check,.action-bar,.inv-sig-clear,
+  .card,.form-page>:not(.inv-preview-wrap){display:none!important;}
+  .screen,.form-page{display:block!important;background:white;padding:0;}
+  .inv-preview-wrap{box-shadow:none;}
+  body{background:white;}
+}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .stat-row{grid-template-columns:1fr 1fr;}
+  .fg-row,.fg-row3,.sig-row,.inv-sig-row,.inv-meta-row,.split-box{grid-template-columns:1fr;}
+  .inv-tbl-hd,.inv-tbl-row{grid-template-columns:1fr 50px 72px 80px;gap:6px;}
+  .li-head,.li-row{grid-template-columns:1fr 54px 72px 30px;gap:6px;}
+  .inv-hdr,.inv-meta-row,.inv-tbl,.inv-totals,.inv-pay,.inv-notes-sec,.inv-samples,.inv-sig-row,.inv-ftr{padding-left:18px;padding-right:18px;}
+  .inv-co{font-size:1.2rem;}
+  .form-body{padding:16px 14px 80px;}
+  .nav-tab{padding:16px 10px;font-size:.74rem;}
+  .nav-brand{font-size:.95rem;padding-right:12px;}
+  .client-list,.jobs-list{padding-left:14px;padding-right:14px;}
+  .section-head{padding:0 14px;}
+}
+
+/* Bottom action bar */
+.action-bar{position:sticky;bottom:0;background:var(--deep);border-top:1px solid rgba(201,150,58,.25);padding:12px 20px;display:flex;gap:10px;z-index:50;}
+.btn-primary{flex:1;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a0f00;border:none;padding:12px;border-radius:7px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.04em;text-transform:uppercase;transition:opacity .2s;}
+.btn-primary:hover{opacity:.88;}
+.btn-secondary{flex:1;background:transparent;border:1.5px solid rgba(201,150,58,.35);color:var(--gold2);padding:12px;border-radius:7px;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-secondary:hover{background:rgba(201,150,58,.08);}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <div class="nav-brand">North To South <span>Contractor Hub</span></div>
+  <div class="nav-tab active" onclick="showScreen('dash')">📊 Dashboard</div>
+  <div class="nav-tab" onclick="showScreen('clients')">👥 Clients</div>
+  <div class="nav-tab" onclick="showScreen('settings')">⚙️ Settings</div>
+  <div class="nav-spacer"></div>
+  <div style="padding-right:14px;">
+    <button class="btn-sm" onclick="startNewJob()">+ New Job</button>
+  </div>
+</nav>
+
+<!-- ══ DASHBOARD ══ -->
+<div class="screen active" id="screen-dash">
+  <div class="dash-hero">
+    <h1>Good to have you back, Zeke.</h1>
+    <p id="dash-date"></p>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val gold" id="stat-total">$0</div><div class="stat-label">Total Quoted</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-active">0</div><div class="stat-label">Active Jobs</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-clients">0</div><div class="stat-label">Clients</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-done">0</div><div class="stat-label">Completed</div></div>
+  </div>
+  <div class="section-head">
+    <h2>Recent Jobs</h2>
+    <button class="btn-sm" onclick="startNewJob()">+ New Job</button>
+  </div>
+  <div class="jobs-list" id="jobs-list">
+    <div class="empty-state">No jobs yet — tap "+ New Job" to get started.</div>
+  </div>
+</div>
+
+<!-- ══ CLIENTS ══ -->
+<div class="screen" id="screen-clients">
+  <div style="background:var(--panel);padding:20px 24px 16px;border-bottom:1px solid rgba(201,150,58,.2);">
+    <h2 style="font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:1.3rem;">Client Directory</h2>
+    <p style="color:rgba(255,255,255,.4);font-size:.8rem;margin-top:2px;">All contacts saved from your jobs</p>
+  </div>
+  <div class="clients-search"><input type="text" id="client-search" placeholder="Search by name, address, or phone…" oninput="renderClients()"></div>
+  <div class="client-list" id="client-list"><div class="empty-state">No clients yet.</div></div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div class="screen" id="screen-settings">
+  <div style="background:var(--panel);padding:20px 24px 16px;border-bottom:1px solid rgba(201,150,58,.2);">
+    <h2 style="font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:1.3rem;">Settings</h2>
+  </div>
+  <div class="settings-body">
+    <div class="set-card">
+      <div class="set-head"><h3>Company Info</h3></div>
+      <div class="set-body">
+        <div class="fg"><label>Company Name</label><input type="text" id="set-coname" value="North To South Home Remodeling by Zeke Corp."></div>
+        <div class="fg-row">
+          <div class="fg"><label>Phone</label><input type="text" id="set-cophone" value="+1 (256) 881-97011"></div>
+          <div class="fg"><label>Email</label><input type="text" id="set-coemail" value="northtosouth@email.com"></div>
+        </div>
+        <div class="fg"><label>Address</label><input type="text" id="set-coaddr" value="4313 Lakeview Drive, Alabama"></div>
+        <div class="fg"><label>Next Invoice Number</label><input type="number" id="set-invno" value="107"></div>
+      </div>
+    </div>
+    <div class="set-card">
+      <div class="set-head"><h3>Default Payment Terms</h3></div>
+      <div class="set-body">
+        <div class="fg"><label>Deposit Percentage</label>
+          <select id="set-deposit">
+            <option value="50">50% deposit / 50% on completion</option>
+            <option value="33">33% deposit / 33% mid / 33% completion</option>
+            <option value="100">Full payment upfront</option>
+            <option value="0">Full payment on completion</option>
+          </select>
+        </div>
+        <div class="fg"><label>Standard Terms Note (appears on every invoice)</label>
+          <textarea id="set-terms">A deposit is required before work begins to cover the cost of materials. Final payment is due the day the job is completed to your satisfaction. Any changes to the agreed scope of work after materials have been purchased may affect the final total.</textarea>
+        </div>
+      </div>
+    </div>
+    <div class="set-card">
+      <div class="set-head"><h3>Default Job Checklist</h3></div>
+      <div class="set-body">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">These tasks will appear on every new job. Edit per job as needed.</p>
+        <div id="set-checklist">
+          <div class="check-item"><input type="checkbox"><label>Walk-through completed</label></div>
+          <div class="check-item"><input type="checkbox"><label>Quote sent to client</label></div>
+          <div class="check-item"><input type="checkbox"><label>Deposit received</label></div>
+          <div class="check-item"><input type="checkbox"><label>Materials purchased</label></div>
+          <div class="check-item"><input type="checkbox"><label>Work started</label></div>
+          <div class="check-item"><input type="checkbox"><label>Client walk-through at completion</label></div>
+          <div class="check-item"><input type="checkbox"><label>Final payment received</label></div>
+          <div class="check-item"><input type="checkbox"><label>Job closed</label></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:4px;" onclick="saveSettings()">Save Settings</button>
+  </div>
+</div>
+
+<!-- ══ NEW JOB FORM ══ -->
+<div class="screen" id="screen-newjob">
+  <div class="form-topbar">
+    <button class="back-btn" onclick="showScreen('dash')">←</button>
+    <h2 id="form-title">New Job</h2>
+    <div style="flex:1"></div>
+    <button class="btn-sm outline" onclick="previewInvoice()">Preview Invoice</button>
+  </div>
+  <div class="form-body" id="job-form-body">
+
+    <!-- Client Info -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">👤</span><h3>Client Info</h3></div>
+      <div class="card-body">
+        <div class="fg-row">
+          <div class="fg"><label>Client Name *</label><input type="text" id="f-clname" placeholder="Full name"></div>
+          <div class="fg"><label>Phone *</label><input type="tel" id="f-clphone" placeholder="(xxx) xxx-xxxx"></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Email</label><input type="email" id="f-clemail" placeholder="email@example.com"></div>
+          <div class="fg"><label>Job Address *</label><input type="text" id="f-claddr" placeholder="Street address"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Details -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">🏠</span><h3>Job Details</h3></div>
+      <div class="card-body">
+        <div class="fg-row">
+          <div class="fg"><label>Job Type</label>
+            <select id="f-jobtype">
+              <option>Bathroom Remodel</option>
+              <option>Kitchen Remodel</option>
+              <option>Full Home Remodel</option>
+              <option>Flooring</option>
+              <option>Tile Work</option>
+              <option>Painting</option>
+              <option>Plumbing</option>
+              <option>Electrical</option>
+              <option>Handyman / Repair</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fg"><label>Status</label>
+            <select id="f-status">
+              <option value="quote">Quote Sent</option>
+              <option value="pending">Awaiting Deposit</option>
+              <option value="active">Active / In Progress</option>
+              <option value="done">Completed</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Scope of Work</label>
+          <textarea id="f-scope" placeholder="Describe what will be done…"></textarea>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Estimated Start Date</label><input type="date" id="f-startdate"></div>
+          <div class="fg"><label>Estimated Completion</label><input type="date" id="f-enddate"></div>
+        </div>
+        <div class="fg-row">
+          <div class="fg"><label>Invoice Date</label><input type="date" id="f-invdate"></div>
+          <div class="fg"><label>Quote / Invoice #</label><input type="text" id="f-invno"></div>
+        </div>
+        <div class="fg"><label>Special Instructions / Client Preferences</label>
+          <textarea id="f-special" placeholder="Color preferences, accessibility needs, things to watch out for…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">💰</span><h3>Labor &amp; Materials</h3></div>
+      <div class="card-body">
+        <div class="li-head"><span>Description</span><span>Qty</span><span>Rate ($)</span><span></span></div>
+        <div id="f-lineitems"></div>
+        <button class="btn-li-add" onclick="addLineItem()">+ Add Item</button>
+        <div class="li-total-row"><span>Total:</span><strong id="f-total-display">$0.00</strong></div>
+        <div class="split-box">
+          <div class="split-item"><div class="split-amt" id="f-deposit-display">$0.00</div><div class="split-label">Deposit Due Upfront</div></div>
+          <div class="split-item"><div class="split-amt" id="f-final-display">$0.00</div><div class="split-label">Due on Completion</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Material Sample Photos -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">📸</span><h3>Material Sample Photos</h3></div>
+      <div class="card-body">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:12px;">Snap photos of tile, vanity, fixtures, paint — anything you want the client to see and approve before you buy.</p>
+        <div class="photo-drop" onclick="document.getElementById('f-photos').click()">
+          <input type="file" id="f-photos" accept="image/*" multiple onchange="handleJobPhotos(event)">
+          <div class="drop-icon">📷</div>
+          <p>Tap to add photos from your camera or gallery</p>
+        </div>
+        <div class="photos-grid" id="f-photos-grid"></div>
+      </div>
+    </div>
+
+    <!-- Job Checklist -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">✅</span><h3>Job Checklist</h3></div>
+      <div class="card-body">
+        <div class="checklist" id="f-checklist"></div>
+        <button class="btn-add-check" onclick="addCheckItem()">+ Add Task</button>
+      </div>
+    </div>
+
+    <!-- Job Notes / Log -->
+    <div class="card">
+      <div class="card-head"><span class="card-icon">📝</span><h3>Job Notes &amp; Log</h3></div>
+      <div class="card-body">
+        <div class="fg"><label>Client Notes (shown on invoice)</label>
+          <textarea id="f-clientnotes" placeholder="Notes for the client — payment terms, material approval window, etc.">A deposit is required before work begins to cover the cost of materials. Final payment is due the day the job is completed to your satisfaction. Any changes to the agreed scope of work after materials have been purchased may affect the final total.</textarea>
+        </div>
+        <div class="fg" style="margin-top:6px;"><label>Internal Notes (not on invoice)</label>
+          <textarea id="f-internalnotes" placeholder="Notes just for you — things to remember, supplier contacts, issues found…"></textarea>
+        </div>
+        <div id="f-log-entries" style="margin-top:8px;"></div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <input type="text" id="f-logentry" style="flex:1;border:1.5px solid var(--rule);border-radius:5px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;" placeholder="Add a note to the job log…">
+          <button class="btn-sm" onclick="addLogEntry()">Log</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="action-bar">
+    <button class="btn-secondary" onclick="saveJobOnly()">💾 Save Job</button>
+    <button class="btn-primary" onclick="previewInvoice()">📄 Generate Invoice</button>
+  </div>
+</div>
+
+<!-- ══ INVOICE PREVIEW SCREEN ══ -->
+<div class="screen" id="screen-invoice">
+  <div class="form-topbar">
+    <button class="back-btn" onclick="showScreen('newjob')">←</button>
+    <h2>Invoice Preview</h2>
+  </div>
+  <div style="padding:20px;max-width:720px;margin:0 auto 80px;">
+    <div class="inv-preview-wrap" id="inv-preview-wrap">
+      <!-- filled by JS -->
+    </div>
+  </div>
+  <div class="action-bar">
+    <button class="btn-secondary" onclick="showScreen('newjob')">← Edit</button>
+    <button class="btn-primary" onclick="window.print()">🖨 Print / Save PDF</button>
+  </div>
+</div>
+
+<!-- ══ CLIENT DETAIL ══ -->
+<div class="screen" id="screen-clientdetail">
+  <div class="form-topbar">
+    <button class="back-btn" onclick="showScreen('clients')">←</button>
+    <h2 id="cd-name">Client</h2>
+  </div>
+  <div style="padding:20px 24px 80px;max-width:720px;margin:0 auto;" id="cd-body"></div>
+  <div class="action-bar">
+    <button class="btn-primary" onclick="newJobForClient()">+ New Job for This Client</button>
+  </div>
+</div>
+
+<script>
+// ════ STATE ════
+let state = {
+  jobs: [],
+  currentJob: null,
+  editingId: null,
+  photos: [],
+  settings: {
+    coname: 'North To South Home Remodeling by Zeke Corp.',
+    cophone: '+1 (256) 881-97011',
+    coemail: 'northtosouth@email.com',
+    coaddr: '4313 Lakeview Drive, Alabama',
+    invno: 107,
+    deposit: 50,
+    terms: 'A deposit is required before work begins to cover the cost of materials. Final payment is due the day the job is completed to your satisfaction. Any changes to the agreed scope of work after materials have been purchased may affect the final total.'
+  }
+};
+
+// ── Persist ──
+function save() { try { localStorage.setItem('nts_state', JSON.stringify(state)); } catch(e){} }
+function load() {
+  try {
+    const d = localStorage.getItem('nts_state');
+    if (d) { state = { ...state, ...JSON.parse(d) }; }
+  } catch(e) {}
+}
+
+// ── Screen nav ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const map = { dash:'📊 Dashboard', clients:'👥 Clients', settings:'⚙️ Settings' };
+  if (map[id]) document.querySelectorAll('.nav-tab').forEach(t => { if (t.textContent.trim().startsWith(map[id].slice(0,3))) t.classList.add('active'); });
+  if (id === 'dash') renderDashboard();
+  if (id === 'clients') renderClients();
+}
+
+// ── Dates ──
+function toISO(d) { return d.toISOString().split('T')[0]; }
+function fmtD(s) { if (!s) return '—'; const [y,m,d]=s.split('-'); return `${m}/${d}/${y}`; }
+function fmtM(n) { return '$' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+// ════ NEW JOB ════
+function startNewJob() {
+  state.editingId = null;
+  state.photos = [];
+  document.getElementById('form-title').textContent = 'New Job';
+  const s = state.settings;
+  document.getElementById('f-clname').value = '';
+  document.getElementById('f-clphone').value = '';
+  document.getElementById('f-clemail').value = '';
+  document.getElementById('f-claddr').value = '';
+  document.getElementById('f-jobtype').value = 'Bathroom Remodel';
+  document.getElementById('f-status').value = 'quote';
+  document.getElementById('f-scope').value = '';
+  document.getElementById('f-startdate').value = '';
+  document.getElementById('f-enddate').value = '';
+  document.getElementById('f-invdate').value = toISO(new Date());
+  document.getElementById('f-invno').value = s.invno;
+  document.getElementById('f-special').value = '';
+  document.getElementById('f-clientnotes').value = s.terms;
+  document.getElementById('f-internalnotes').value = '';
+  document.getElementById('f-log-entries').innerHTML = '';
+  document.getElementById('f-photos-grid').innerHTML = '';
+  buildDefaultLineItems();
+  buildDefaultChecklist();
+  updateTotal();
+  showScreen('newjob');
+}
+
+function newJobForClient() {
+  const c = state.currentClientId;
+  const jobs = state.jobs.filter(j => j.clientId === c);
+  const last = jobs[jobs.length - 1];
+  startNewJob();
+  if (last) {
+    document.getElementById('f-clname').value = last.clname;
+    document.getElementById('f-clphone').value = last.clphone;
+    document.getElementById('f-clemail').value = last.clemail;
+    document.getElementById('f-claddr').value = last.claddr;
+  }
+  showScreen('newjob');
+}
+
+// ── Line items ──
+const defaultItems = [
+  { d: 'Labor – Tub removal & walk-in shower conversion', q: 1, r: 800 },
+  { d: 'Labor – Full ceramic tile installation (floor to ceiling)', q: 1, r: 900 },
+  { d: 'Labor – Vanity & cabinet installation', q: 1, r: 350 },
+  { d: 'Labor – Comfort-height toilet replacement', q: 1, r: 200 },
+  { d: 'Labor – Ceiling vent relocation', q: 1, r: 250 },
+  { d: 'Labor – LED fan/light ceiling installation', q: 1, r: 150 },
+  { d: 'Labor – Mirror installation', q: 1, r: 100 },
+  { d: 'Labor – Re-caulk kitchen counter', q: 1, r: 75 },
+  { d: 'Materials – Ceramic tile (approx 59 sq ft)', q: 1, r: 420 },
+  { d: 'Materials – Brushed nickel fixtures (sink + shower)', q: 1, r: 280 },
+  { d: 'Materials – Vanity, cabinets & mirror', q: 1, r: 550 },
+  { d: 'Materials – Comfort-height toilet', q: 1, r: 225 },
+  { d: 'Materials – LED fan/light combo', q: 1, r: 120 },
+  { d: 'Materials – Misc (caulk, adhesive, hardware)', q: 1, r: 80 },
+];
+
+function buildDefaultLineItems() {
+  const c = document.getElementById('f-lineitems');
+  c.innerHTML = '';
+  defaultItems.forEach(i => addLineItemRow(i.d, i.q, i.r));
+}
+
+function addLineItem() { addLineItemRow('', 1, 0); }
+
+function addLineItemRow(d='', q=1, r=0) {
+  const c = document.getElementById('f-lineitems');
+  const row = document.createElement('div');
+  row.className = 'li-row';
+  row.innerHTML = `
+    <input type="text" value="${d}" placeholder="Description" oninput="updateTotal()">
+    <input type="number" value="${q}" min="0" step="1" oninput="updateTotal()">
+    <input type="number" value="${r}" min="0" step="0.01" oninput="updateTotal()">
+    <button class="li-del" onclick="this.parentElement.remove();updateTotal()">×</button>`;
+  c.appendChild(row);
+  updateTotal();
+}
+
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll('#f-lineitems .li-row').forEach(r => {
+    const ins = r.querySelectorAll('input');
+    total += (parseFloat(ins[1].value)||0) * (parseFloat(ins[2].value)||0);
+  });
+  const dep = parseInt(state.settings.deposit) || 50;
+  document.getElementById('f-total-display').textContent = fmtM(total);
+  document.getElementById('f-deposit-display').textContent = fmtM(total * dep / 100);
+  document.getElementById('f-final-display').textContent = fmtM(total * (100 - dep) / 100);
+}
+
+// ── Checklist ──
+const defaultChecks = [
+  'Walk-through completed',
+  'Quote sent to client',
+  'Deposit received',
+  'Materials purchased',
+  'Work started',
+  'Client walk-through at completion',
+  'Final payment received',
+  'Job closed'
+];
+
+function buildDefaultChecklist() {
+  const c = document.getElementById('f-checklist');
+  c.innerHTML = '';
+  defaultChecks.forEach(t => addCheckRow(t, false));
+}
+
+function addCheckRow(text='', checked=false) {
+  const c = document.getElementById('f-checklist');
+  const id = 'chk_' + Date.now() + Math.random();
+  const div = document.createElement('div');
+  div.className = 'check-item' + (checked ? ' done' : '');
+  div.innerHTML = `<input type="checkbox" id="${id}" ${checked?'checked':''} onchange="this.closest('.check-item').classList.toggle('done',this.checked)">
+    <label for="${id}">${text || '<input type="text" placeholder="New task…" style="border:none;outline:none;font-family:DM Sans,sans-serif;font-size:.85rem;color:var(--ink);background:transparent;width:100%;">'}</label>`;
+  c.appendChild(div);
+}
+
+function addCheckItem() { addCheckRow('', false); }
+
+// ── Photos ──
+function handleJobPhotos(e) {
+  Array.from(e.target.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state.photos.push({ src: ev.target.result, label: file.name.replace(/\.[^.]+$/,'') });
+      renderJobPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
+function renderJobPhotos() {
+  const g = document.getElementById('f-photos-grid');
+  g.innerHTML = '';
+  state.photos.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'p-thumb';
+    div.innerHTML = `<img src="${p.src}" alt="">
+      <div class="p-label"><input type="text" value="${p.label}" placeholder="Label…" oninput="state.photos[${i}].label=this.value"></div>
+      <button class="p-del" onclick="state.photos.splice(${i},1);renderJobPhotos()">×</button>`;
+    g.appendChild(div);
+  });
+}
+
+// ── Log ──
+function addLogEntry() {
+  const input = document.getElementById('f-logentry');
+  const text = input.value.trim();
+  if (!text) return;
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const c = document.getElementById('f-log-entries');
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  div.innerHTML = `<div class="log-time">${timeStr}</div><div class="log-text">${text}</div>`;
+  c.insertBefore(div, c.firstChild);
+  input.value = '';
+}
+
+// ── Collect job data ──
+function collectJob() {
+  const rows = document.querySelectorAll('#f-lineitems .li-row');
+  let lineItems = [], total = 0;
+  rows.forEach(r => {
+    const ins = r.querySelectorAll('input');
+    const q = parseFloat(ins[1].value)||0, rt = parseFloat(ins[2].value)||0;
+    const amt = q * rt;
+    total += amt;
+    lineItems.push({ desc: ins[0].value, qty: q, rate: rt, amt });
+  });
+
+  const checks = [];
+  document.querySelectorAll('#f-checklist .check-item').forEach(c => {
+    const cb = c.querySelector('input[type=checkbox]');
+    const lb = c.querySelector('label');
+    const ti = lb.querySelector('input[type=text]');
+    checks.push({ text: ti ? ti.value : lb.textContent.trim(), done: cb.checked });
+  });
+
+  const logs = [];
+  document.querySelectorAll('#f-log-entries .log-entry').forEach(l => {
+    logs.push({ time: l.querySelector('.log-time').textContent, text: l.querySelector('.log-text').textContent });
+  });
+
+  return {
+    id: state.editingId || ('job_' + Date.now()),
+    clname: document.getElementById('f-clname').value,
+    clphone: document.getElementById('f-clphone').value,
+    clemail: document.getElementById('f-clemail').value,
+    claddr: document.getElementById('f-claddr').value,
+    jobtype: document.getElementById('f-jobtype').value,
+    status: document.getElementById('f-status').value,
+    scope: document.getElementById('f-scope').value,
+    startdate: document.getElementById('f-startdate').value,
+    enddate: document.getElementById('f-enddate').value,
+    invdate: document.getElementById('f-invdate').value,
+    invno: document.getElementById('f-invno').value,
+    special: document.getElementById('f-special').value,
+    clientnotes: document.getElementById('f-clientnotes').value,
+    internalnotes: document.getElementById('f-internalnotes').value,
+    lineItems, total, checks, logs,
+    photos: state.photos.map(p => ({ src: p.src, label: p.label })),
+    clientId: document.getElementById('f-clphone').value.replace(/\D/g,'') || document.getElementById('f-clname').value,
+    createdAt: new Date().toISOString()
+  };
+}
+
+function saveJobOnly() {
+  const job = collectJob();
+  if (!job.clname) { alert('Please enter the client name.'); return; }
+  const idx = state.jobs.findIndex(j => j.id === job.id);
+  if (idx >= 0) state.jobs[idx] = job; else state.jobs.unshift(job);
+  state.settings.invno = parseInt(job.invno) + 1;
+  save();
+  renderDashboard();
+  showScreen('dash');
+}
+
+// ════ INVOICE PREVIEW ════
+function previewInvoice() {
+  const job = collectJob();
+  const s = state.settings;
+  const dep = parseInt(s.deposit) || 50;
+  const depAmt = job.total * dep / 100;
+  const finAmt = job.total * (100 - dep) / 100;
+
+  let lineHTML = job.lineItems.map(l =>
+    `<div class="inv-tbl-row">
+      <div class="inv-row-name">${l.desc || '—'}</div>
+      <div class="inv-row-num">${l.qty}</div>
+      <div class="inv-row-num">${fmtM(l.rate)}</div>
+      <div class="inv-row-num bold">${fmtM(l.amt)}</div>
+    </div>`).join('');
+
+  let samplesHTML = '';
+  if (job.photos && job.photos.length) {
+    samplesHTML = `<div class="inv-samples" style="display:block;">
+      <h3>📸 Proposed Material Samples</h3>
+      <div class="inv-samples-grid">${job.photos.map(p=>`
+        <div class="inv-sample-card"><img src="${p.src}" alt="${p.label}">
+          <div class="inv-sample-lbl">${p.label||'Sample'}</div>
+        </div>`).join('')}</div>
+    </div>`;
+  }
+
+  let notesHTML = '';
+  if (job.clientnotes) {
+    notesHTML = `<div class="inv-notes-sec" style="display:block;">
+      <h3>📝 Notes</h3><div class="inv-notes-body">${job.clientnotes}</div>
+    </div>`;
+  }
+
+  document.getElementById('inv-preview-wrap').innerHTML = `
+    <div class="inv-hdr">
+      <div class="inv-co">${s.coname}</div>
+      <div class="inv-co-sub">Professional Home Remodeling &amp; Repair</div>
+      <div class="inv-co-contact">${s.coaddr}<br>${s.cophone}</div>
+    </div>
+    <div class="inv-meta-row">
+      <div>
+        <div class="inv-bt-label">Bill To</div>
+        <div class="inv-bt-name">${job.clname||'—'}</div>
+        <div class="inv-bt-detail">${job.claddr||''}<br>${job.clphone||''}<br>${job.clemail||''}</div>
+      </div>
+      <div class="inv-d-grid">
+        <div class="inv-d-item"><label>Invoice No.</label><span class="no">#${job.invno}</span></div>
+        <div class="inv-d-item"><label>Date</label><span>${fmtD(job.invdate)}</span></div>
+        <div class="inv-d-item"><label>Job Type</label><span>${job.jobtype}</span></div>
+        <div class="inv-d-item"><label>Timeline</label><span>${job.startdate?fmtD(job.startdate)+' – '+fmtD(job.enddate):'TBD'}</span></div>
+      </div>
+    </div>
+    ${job.scope?`<div class="inv-scope"><strong>Scope of Work</strong>${job.scope}</div>`:''}
+    <div class="inv-tbl">
+      <div class="inv-tbl-hd"><span>Description</span><span>Qty</span><span>Rate</span><span>Amount</span></div>
+      ${lineHTML}
+    </div>
+    <div class="inv-totals">
+      <div class="inv-totals-box">
+        <div class="inv-tot-row"><label>Subtotal</label><span>${fmtM(job.total)}</span></div>
+        <div class="inv-tot-row"><label>Paid</label><span>$0.00</span></div>
+        <div class="inv-tot-row big"><label>Balance Due</label><span>${fmtM(job.total)}</span></div>
+      </div>
+    </div>
+    <div class="inv-pay">
+      <h4>⚡ Payment Schedule</h4>
+      <div class="inv-pay-line">
+        <span>Deposit — Due before work begins</span>
+        <div style="text-align:right"><div class="inv-pay-amt">${fmtM(depAmt)}</div><div class="inv-pay-note">Required to purchase materials &amp; schedule job</div></div>
+      </div>
+      <div class="inv-pay-line">
+        <span>Final Payment — Due upon completion</span>
+        <div style="text-align:right"><div class="inv-pay-amt">${fmtM(finAmt)}</div><div class="inv-pay-note">Due the day work is completed &amp; inspected</div></div>
+      </div>
+    </div>
+    ${samplesHTML}
+    ${notesHTML}
+    <div class="inv-sig-row">
+      <div>
+        <div class="inv-sig-block">
+          <label>Contractor Signature</label>
+          <div class="inv-sig-line"><canvas class="inv-sig-canvas" id="isc-co"></canvas></div>
+          <button class="inv-sig-clear" onclick="clearISig('isc-co')">Clear</button>
+          <div class="inv-sig-name">${s.coname}</div>
+          <div class="inv-sig-date">Date: ___________</div>
+        </div>
+      </div>
+      <div>
+        <div class="inv-sig-block">
+          <label>Client Signature &amp; Acceptance</label>
+          <div class="inv-sig-line"><canvas class="inv-sig-canvas" id="isc-cl"></canvas></div>
+          <button class="inv-sig-clear" onclick="clearISig('isc-cl')">Clear</button>
+          <div class="inv-sig-name">${job.clname||'Client'}</div>
+          <div class="inv-sig-date">Date: ___________</div>
+        </div>
+      </div>
+    </div>
+    <div class="inv-ftr">
+      <div class="inv-ftr-note">Thank you for trusting us with your home.</div>
+      <div class="inv-ftr-brand">North To South Home Remodeling</div>
+    </div>`;
+
+  showScreen('invoice');
+  setTimeout(() => { initISig('isc-co'); initISig('isc-cl'); }, 150);
+
+  // Auto-save
+  const idx = state.jobs.findIndex(j => j.id === job.id);
+  if (idx >= 0) state.jobs[idx] = job; else state.jobs.unshift(job);
+  state.settings.invno = parseInt(job.invno) + 1;
+  save();
+}
+
+// ── Invoice signatures ──
+function initISig(id) {
+  const c = document.getElementById(id); if (!c) return;
+  const ctx = c.getContext('2d');
+  c.width = c.offsetWidth; c.height = c.offsetHeight;
+  ctx.strokeStyle = '#1c2b3a'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false, last = null;
+  const pos = e => { const r = c.getBoundingClientRect(), s = e.touches?e.touches[0]:e; return {x:s.clientX-r.left,y:s.clientY-r.top}; };
+  c.onmousedown = e => { drawing=true; last=pos(e); };
+  c.onmousemove = e => { if (!drawing) return; const p=pos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; };
+  c.onmouseup = c.onmouseleave = () => drawing=false;
+  c.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; last=pos(e); }, {passive:false});
+  c.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing)return; const p=pos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; }, {passive:false});
+  c.addEventListener('touchend', () => drawing=false);
+}
+
+function clearISig(id) {
+  const c = document.getElementById(id); if (!c) return;
+  c.getContext('2d').clearRect(0,0,c.width,c.height);
+}
+
+// ════ DASHBOARD ════
+function renderDashboard() {
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const total = state.jobs.reduce((a,j)=>a+j.total,0);
+  const active = state.jobs.filter(j=>j.status==='active').length;
+  const done = state.jobs.filter(j=>j.status==='done').length;
+  const clients = new Set(state.jobs.map(j=>j.clientId)).size;
+
+  document.getElementById('stat-total').textContent = fmtM(total);
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-clients').textContent = clients;
+  document.getElementById('stat-done').textContent = done;
+
+  const list = document.getElementById('jobs-list');
+  if (!state.jobs.length) {
+    list.innerHTML = '<div class="empty-state">No jobs yet — tap "+ New Job" to get started.</div>';
+    return;
+  }
+  list.innerHTML = state.jobs.map(j => `
+    <div class="job-card" onclick="openJob('${j.id}')">
+      <div class="job-avatar">${(j.clname||'?')[0]}</div>
+      <div class="job-info">
+        <div class="job-name">${j.clname||'Unnamed Client'}</div>
+        <div class="job-addr">${j.claddr||''} · ${j.jobtype||''}</div>
+      </div>
+      <div class="job-right">
+        <div class="job-total">${fmtM(j.total)}</div>
+        <span class="job-status status-${j.status||'quote'}">${statusLabel(j.status)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function statusLabel(s) {
+  return {quote:'Quote Sent',active:'In Progress',done:'Completed',pending:'Awaiting Deposit'}[s]||s||'Quote';
+}
+
+// ── Open existing job ──
+function openJob(id) {
+  const job = state.jobs.find(j => j.id === id);
+  if (!job) return;
+  state.editingId = id;
+  state.photos = job.photos ? [...job.photos] : [];
+  document.getElementById('form-title').textContent = job.clname || 'Edit Job';
+
+  document.getElementById('f-clname').value = job.clname||'';
+  document.getElementById('f-clphone').value = job.clphone||'';
+  document.getElementById('f-clemail').value = job.clemail||'';
+  document.getElementById('f-claddr').value = job.claddr||'';
+  document.getElementById('f-jobtype').value = job.jobtype||'Bathroom Remodel';
+  document.getElementById('f-status').value = job.status||'quote';
+  document.getElementById('f-scope').value = job.scope||'';
+  document.getElementById('f-startdate').value = job.startdate||'';
+  document.getElementById('f-enddate').value = job.enddate||'';
+  document.getElementById('f-invdate').value = job.invdate||toISO(new Date());
+  document.getElementById('f-invno').value = job.invno||state.settings.invno;
+  document.getElementById('f-special').value = job.special||'';
+  document.getElementById('f-clientnotes').value = job.clientnotes||'';
+  document.getElementById('f-internalnotes').value = job.internalnotes||'';
+
+  // Line items
+  const c = document.getElementById('f-lineitems');
+  c.innerHTML = '';
+  (job.lineItems||[]).forEach(l => addLineItemRow(l.desc, l.qty, l.rate));
+  updateTotal();
+
+  // Checklist
+  const cc = document.getElementById('f-checklist');
+  cc.innerHTML = '';
+  (job.checks||defaultChecks.map(t=>({text:t,done:false}))).forEach(ch => addCheckRow(ch.text, ch.done));
+
+  // Log
+  const lc = document.getElementById('f-log-entries');
+  lc.innerHTML = '';
+  (job.logs||[]).forEach(l => {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    div.innerHTML = `<div class="log-time">${l.time}</div><div class="log-text">${l.text}</div>`;
+    lc.appendChild(div);
+  });
+
+  // Photos
+  renderJobPhotos();
+  showScreen('newjob');
+}
+
+// ════ CLIENTS ════
+function renderClients() {
+  const q = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const clientMap = {};
+  state.jobs.forEach(j => {
+    const cid = j.clientId;
+    if (!clientMap[cid]) clientMap[cid] = { name: j.clname, phone: j.clphone, email: j.clemail, addr: j.claddr, jobs: [], id: cid };
+    clientMap[cid].jobs.push(j);
+  });
+  const clients = Object.values(clientMap).filter(c =>
+    !q || c.name?.toLowerCase().includes(q) || c.phone?.includes(q) || c.addr?.toLowerCase().includes(q)
+  );
+  const list = document.getElementById('client-list');
+  if (!clients.length) { list.innerHTML = '<div class="empty-state">No clients found.</div>'; return; }
+  list.innerHTML = clients.map(c => {
+    const total = c.jobs.reduce((a,j)=>a+j.total,0);
+    return `<div class="client-row" onclick="openClientDetail('${c.id}')">
+      <div><div class="cl-name">${c.name||'—'}</div><div class="cl-meta">${c.addr||''} · ${c.phone||''}</div></div>
+      <div><div class="cl-jobs">${c.jobs.length} job${c.jobs.length!==1?'s':''}</div><div class="cl-total">${fmtM(total)}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function openClientDetail(cid) {
+  state.currentClientId = cid;
+  const jobs = state.jobs.filter(j => j.clientId === cid);
+  const cl = jobs[0];
+  document.getElementById('cd-name').textContent = cl?.clname || 'Client';
+  const total = jobs.reduce((a,j)=>a+j.total,0);
+  document.getElementById('cd-body').innerHTML = `
+    <div style="background:#fff;border-radius:8px;border:1px solid var(--rule);padding:18px;margin-bottom:14px;">
+      <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;">Contact Info</div>
+      <div style="font-size:.92rem;color:var(--deep);font-weight:600;">${cl?.clname||'—'}</div>
+      <div style="font-size:.83rem;color:var(--muted);margin-top:4px;line-height:1.7;">${cl?.claddr||''}<br>${cl?.clphone||''}<br>${cl?.clemail||''}</div>
+    </div>
+    <div style="background:#fff;border-radius:8px;border:1px solid var(--rule);padding:18px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);">Job History</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--gold);">${fmtM(total)} total</div>
+      </div>
+      ${jobs.map(j=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule);cursor:pointer;" onclick="openJob('${j.id}')">
+          <div><div style="font-size:.88rem;font-weight:600;color:var(--deep);">${j.jobtype||'Job'}</div>
+          <div style="font-size:.75rem;color:var(--muted);">${fmtD(j.invdate)} · #${j.invno}</div></div>
+          <div style="text-align:right"><div style="font-family:'Playfair Display',serif;color:var(--gold);font-size:.95rem;">${fmtM(j.total)}</div>
+          <span class="job-status status-${j.status||'quote'}" style="display:inline-block;">${statusLabel(j.status)}</span></div>
+        </div>`).join('')}
+    </div>`;
+  showScreen('clientdetail');
+}
+
+// ════ SETTINGS ════
+function saveSettings() {
+  state.settings.coname = document.getElementById('set-coname').value;
+  state.settings.cophone = document.getElementById('set-cophone').value;
+  state.settings.coemail = document.getElementById('set-coemail').value;
+  state.settings.coaddr = document.getElementById('set-coaddr').value;
+  state.settings.invno = parseInt(document.getElementById('set-invno').value)||107;
+  state.settings.deposit = parseInt(document.getElementById('set-deposit').value)||50;
+  state.settings.terms = document.getElementById('set-terms').value;
+  save();
+  alert('Settings saved ✓');
+}
+
+// ════ INIT ════
+// Show Joyce's job fresh UNLESS Zeke has already saved his own real jobs
+// Once he saves his first new job, the app remembers his data forever
+const _existing = localStorage.getItem('nts_state');
+const _hasRealJobs = _existing && JSON.parse(_existing)?.jobs?.some(j => j.id !== 'job_joyce_griffin');
+if (!_hasRealJobs) { localStorage.removeItem('nts_state'); }
+
+const joyceLineItems = defaultItems.map(i => ({desc:i.d, qty:i.q, rate:i.r, amt:i.q*i.r}));
+const joyceTotal = defaultItems.reduce((a,i)=>a+(i.q*i.r),0);
+const joyceJob = {
+  id: 'job_joyce_griffin',
+  clname: 'Joyce Griffin',
+  clphone: '(256) 520-1499',
+  clemail: 'jgriffin8090@gmail.com',
+  claddr: '231 Saddle Rock',
+  jobtype: 'Bathroom Remodel',
+  status: 'quote',
+  scope: 'Complete bathroom remodel — 231 Saddle Rock. Includes tub-to-shower conversion (elderly-accessible), full ceramic tile floor to ceiling, new vanity & cabinets (blue/white or Dolphin Grey), brushed nickel fixtures, comfort-height toilet replacement, ceiling vent relocation to shower area, new LED fan/light, new mirror, and re-caulk of kitchen counter. Estimated timeline: 7–12 days.',
+  startdate: '', enddate: '',
+  invdate: toISO(new Date()),
+  invno: '107',
+  special: 'Client is elderly — accessibility is a priority. Prefers blue/white or Dolphin Grey for vanity. Bring tile samples for client approval. Check short wall for structure before vent relocation.',
+  clientnotes: 'All tile and vanity color selections are subject to your approval before installation begins. Please confirm your preferred colors within 3 business days to hold your scheduled start date.\n\nA 50% deposit is required before work begins — this covers the cost of materials. The remaining 50% is due the day the job is completed to your satisfaction.\n\nAny changes to the agreed scope of work after materials have been purchased may affect the final total.',
+  internalnotes: 'Notes from walkthrough: floor already redone. Quote 1: $4,500–$5,000 full remodel. Quote 2: $3,500 exception of vanity. Client wants brushed nickel on everything. Multi-compartment shower setup. Check short wall for structure before moving vent.',
+  lineItems: joyceLineItems,
+  total: joyceTotal,
+  checks: defaultChecks.map((t,i) => ({text:t, done:i===0})),
+  logs: [{
+    time: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' — Walkthrough',
+    text: 'Completed walkthrough at 231 Saddle Rock. Client Joyce Griffin wants full bathroom remodel. Elderly-accessible shower conversion. Bring tile samples next visit. Two quote options discussed: $4,500–$5,000 full or $3,500 excluding vanity.'
+  }],
+  photos: [],
+  clientId: '2565201499',
+  createdAt: new Date().toISOString()
+};
+
+state.jobs = [joyceJob];
+state.settings.invno = 108;
+save();
+
+document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+renderDashboard();
+</script>
+</body>
+</html>
